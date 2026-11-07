@@ -1,0 +1,8 @@
+input/
+.llm_cache/
+__pycache__/
+.env
+outputs/
+outputs_*/
+venv/
+*.pyc
