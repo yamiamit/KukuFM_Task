@@ -23,7 +23,7 @@ import argparse, csv, json, random
 from pathlib import Path
 from statistics import mean
 from parser import load_episodes, fmt, to_sec
-from llm import call_llm
+from llm import call_llm, config_error
 from promo_finder import JUDGE_SYSTEM, JUDGE_USER, MAX_LEN, clip_transcript, snap_end
 
 METRICS = ("hook", "cliffhanger", "standalone")
@@ -127,6 +127,10 @@ def main():
     args = ap.parse_args()
 
     out = Path(args.out)
+    if not (out / "promos.json").exists():
+        raise SystemExit(f"No {out / 'promos.json'} yet: run promo_finder.py first (or pass --out <its folder>).")
+    if args.top and config_error():
+        raise SystemExit(config_error())
     ranked = json.loads((out / "promos.json").read_text())["ranked"]
     eps = {e.number: e for e in load_episodes(args.input)}
     if args.top:

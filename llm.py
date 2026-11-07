@@ -40,6 +40,19 @@ def model_name() -> str:
     return "mock" if p == "mock" else os.getenv("LLM_MODEL", PROVIDERS[p][2])
 
 
+def config_error():
+    """A clear message if the model settings can't work, else None. Checked once before a run."""
+    p = os.getenv("LLM_PROVIDER", "gemini")
+    if p == "mock":
+        return None
+    if p not in PROVIDERS:
+        return f"LLM_PROVIDER='{p}' is not known. Use one of: mock, {', '.join(PROVIDERS)}."
+    key_env = PROVIDERS[p][1]
+    if key_env and not os.getenv(key_env):
+        return f"LLM_PROVIDER={p} needs an API key: set {key_env} (e.g. export {key_env}=your_key)."
+    return None
+
+
 def extract_json(text: str) -> dict:
     """Models sometimes wrap JSON in ``` fences or add chatter; pull out the object."""
     text = re.sub(r"```(?:json)?", "", text)

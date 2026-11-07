@@ -20,7 +20,7 @@ Usage:
 import argparse, csv, json, re, time
 from pathlib import Path
 from parser import load_episodes, timeline_for_prompt, fmt, print_warnings
-from llm import call_llm, model_name, STATS
+from llm import call_llm, model_name, config_error, STATS
 
 MIN_LEN, MAX_LEN, HOOK_WINDOW = 20.0, 60.0, 3.0
 
@@ -275,6 +275,8 @@ def main():
     ap.add_argument("--episodes", default="", help="e.g. 1-5 to run a subset")
     args = ap.parse_args()
 
+    if config_error():
+        raise SystemExit(config_error())
     out = Path(args.out); out.mkdir(exist_ok=True)
     all_eps = load_episodes(args.input)
     print_warnings()
